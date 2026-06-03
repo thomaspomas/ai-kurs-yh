@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getModulesForTrack } from '@/data/modules'
@@ -86,13 +87,13 @@ export default async function DashboardPage() {
                   Alla moduler och examinationen är genomförda.
                 </p>
               </div>
-              <a
+              <Link
                 href="/diplom"
                 className="shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
                 style={{ backgroundColor: '#2D807C' }}
               >
                 Hämta diplom
-              </a>
+              </Link>
             </div>
           )}
 
@@ -105,13 +106,13 @@ export default async function DashboardPage() {
                   Nu återstår examinationen för att erhålla ditt diplom.
                 </p>
               </div>
-              <a
+              <Link
                 href="/examination"
                 className="shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-white"
                 style={{ backgroundColor: '#C75000' }}
               >
                 Gå till examinationen
-              </a>
+              </Link>
             </div>
           )}
         </div>
@@ -150,12 +151,12 @@ export default async function DashboardPage() {
               </p>
             </div>
             {!examApproved && (
-              <a
+              <Link
                 href="/examination"
                 className="shrink-0 px-4 py-2 rounded-lg text-sm font-medium border border-border text-content hover:border-primary/60 transition-colors"
               >
                 {allModulesDone ? 'Starta' : 'Låst'}
-              </a>
+              </Link>
             )}
             {examApproved && (
               <span className="text-sm font-medium text-secondary">Godkänd</span>

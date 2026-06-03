@@ -2,10 +2,9 @@
 
 export const dynamic = 'force-dynamic'
 
-import { use, useEffect, useState, useCallback, useTransition } from 'react'
+import { useEffect, useState, useCallback, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 import { getModulesForTrack } from '@/data/modules'
 import { SectionContent } from '@/components/course/SectionContent'
 import { QuizCard } from '@/components/course/QuizCard'
@@ -15,14 +14,14 @@ import { Footer } from '@/components/layout/Footer'
 import type { Track } from '@/types'
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export default function ModulePage({ params }: PageProps) {
-  const { id } = use(params)
+  const { id } = params
   const router = useRouter()
 
-  const moduleId = parseInt(id, 10)
+  const moduleId = Number(id)
 
   const [completedSections, setCompletedSections] = useState<string[]>([])
   const [reflections, setReflections] = useState<Record<string, string>>({})
@@ -30,36 +29,35 @@ export default function ModulePage({ params }: PageProps) {
   const [loading, setLoading] = useState(true)
   const [track, setTrack] = useState<Track>('utbildningsledare')
   const [quizPassed, setQuizPassed] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [, startLoadTransition] = useTransition()
 
   const loadProgress = useCallback(async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/auth/login'); return }
+    const response = await fetch(`/api/progress?moduleId=${moduleId}`, {
+      cache: 'no-store',
+      credentials: 'include',
+    })
+    const result = await response.json().catch(() => ({}))
+    if (!response.ok) {
+      if (response.status === 401) {
+        router.push('/auth/login')
+      } else {
+        console.error('Failed to load progress:', result.error || response.statusText)
+        setErrorMessage(result.error || 'Kunde inte läsa progress. Försök igen.')
+      }
+      setLoading(false)
+      return
+    }
 
-    setUserName(user.user_metadata?.full_name ?? user.email ?? '')
-    setTrack((user.user_metadata?.track as Track) ?? 'utbildningsledare')
-
-    const [progressRes, reflRes] = await Promise.all([
-      supabase
-        .from('module_progress')
-        .select('section_id')
-        .eq('user_id', user.id)
-        .eq('module_id', moduleId),
-      supabase
-        .from('reflections')
-        .select('section_id, reflection_text')
-        .eq('user_id', user.id)
-        .eq('module_id', moduleId),
-    ])
-
-    setCompletedSections((progressRes.data ?? []).map((r: { section_id: string }) => r.section_id))
-
+    setCompletedSections((result.completedSections ?? []).map((r: { section_id: string }) => r.section_id))
     const reflMap: Record<string, string> = {}
-    for (const r of (reflRes.data ?? []) as { section_id: string; reflection_text: string }[]) {
+    for (const r of (result.reflections ?? []) as { section_id: string; reflection_text: string }[]) {
       reflMap[r.section_id] = r.reflection_text
     }
     setReflections(reflMap)
+
+    setUserName(result.userName ?? '')
+    setTrack((result.track as Track) ?? 'utbildningsledare')
 
     setLoading(false)
   }, [moduleId, router])
@@ -71,20 +69,34 @@ export default function ModulePage({ params }: PageProps) {
   }, [loadProgress, startLoadTransition])
 
   async function handleComplete(sectionId: string, reflectionText?: string, aiFeedback?: string) {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    setErrorMessage('')
 
-    const { error } = await supabase.rpc('complete_section', {
-      p_module_id: moduleId,
-      p_section_id: sectionId,
-      p_reflection_text: reflectionText ?? null,
-      p_ai_feedback: aiFeedback ?? null,
+    const response = await fetch('/api/progress', {
+      method: 'POST',
+      cache: 'no-store',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        moduleId,
+        sectionId,
+        reflectionText,
+        aiFeedback,
+      }),
     })
 
-    if (error) return
+    const result = await response.json().catch(() => ({}))
 
-    setCompletedSections((prev) => prev.includes(sectionId) ? prev : [...prev, sectionId])
+    if (!response.ok) {
+      console.error('Failed to save module progress:', result.error || response.statusText)
+      setErrorMessage(
+        result.error
+          ? `Kunde inte spara progression: ${result.error}`
+          : 'Kunde inte spara progression. Försök igen eller kontakta support om problemet kvarstår.'
+      )
+      return
+    }
+
+    setCompletedSections((prev) => (prev.includes(sectionId) ? prev : [...prev, sectionId]))
   }
 
   const modules = getModulesForTrack(track)
@@ -168,9 +180,15 @@ export default function ModulePage({ params }: PageProps) {
             ))}
           </div>
         ) : currentModule ? (
-          <div className="space-y-4">
-            {currentModule.sections
-              .filter((s) => s.type !== 'reflection')
+          <>
+            {errorMessage && (
+              <div className="mb-4 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-primary">
+                {errorMessage}
+              </div>
+            )}
+            <div className="space-y-4">
+              {currentModule.sections
+                .filter((s) => s.type !== 'reflection')
               .map((section) => (
                 <SectionContent
                   key={section.id}
@@ -226,8 +244,8 @@ export default function ModulePage({ params }: PageProps) {
                   </div>
                 )
               )}
-          </div>
-        ) : null}
+            </div>
+          </> ) : null}
 
         <div className="flex items-center justify-between mt-10 pt-6 border-t border-border">
           {prevModule ? (

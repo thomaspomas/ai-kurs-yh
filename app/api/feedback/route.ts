@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
+import type { Track } from '@/types'
 
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX_REQUESTS = 8
@@ -49,8 +50,38 @@ export async function POST(req: Request) {
 
     const client = new Anthropic({ apiKey })
 
+    const trackSettings: Record<Track, { courseTitle: string; audience: string }> = {
+      utbildningsledare: {
+        courseTitle: 'AI för utbildningsledare – mellannivå',
+        audience: 'utbildningsledare inom yrkeshögskola och vuxenutbildning',
+      },
+      'yh-ledning': {
+        courseTitle: 'AI för YH-ledning – mellannivå',
+        audience: 'ledning, styrelse och beslutsfattare inom YH',
+      },
+      'yh-larare': {
+        courseTitle: 'AI för YH-lärare – mellannivå',
+        audience: 'lärare och handledare på yrkeshögskola',
+      },
+      'yh-studerande': {
+        courseTitle: 'AI för YH-studerande – mellannivå',
+        audience: 'studenter på yrkeshögskola och vuxenutbildning',
+      },
+      'yh-affarsutvecklare': {
+        courseTitle: 'AI för affärsutvecklare inom YH – mellannivå',
+        audience: 'affärs- och verksamhetsutvecklare inom YH',
+      },
+      'ai-grundkurs': {
+        courseTitle: 'AI-grundkurs – kom igång från grunden',
+        audience: 'alla som vill förstå AI från början',
+      },
+    }
+
+    const safeTrack = (user.user_metadata?.track as Track) ?? 'utbildningsledare'
+    const settings = trackSettings[safeTrack]
+
     const systemPrompt = [
-      'Du är en kursassistent för kursen "AI för utbildningsledare – mellannivå", riktad till utbildningsledare inom yrkeshögskola och vuxenutbildning. Din uppgift är att ge kort, konstruktiv återkoppling på deltagarens reflektion.',
+      `Du är en kursassistent för kursen "${settings.courseTitle}", riktad till ${settings.audience}. Din uppgift är att ge kort, konstruktiv återkoppling på deltagarens reflektion.`,
       '',
       'Ge återkoppling som:',
       '- Bekräftar det som är genomtänkt i reflektionen',

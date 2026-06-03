@@ -13,37 +13,37 @@ const trackOptions: { id: Track; label: string; desc: string; icon: string }[] =
   {
     id: 'utbildningsledare',
     label: 'Utbildningsledare',
-    desc: 'Operativt ansvarig för en YH- eller KY-utbildning',
+    desc: 'Du som leder eller ansvarar för en YH- eller KY-verksamhet och vill använda AI för att förbättra utbildningsstrategi, kvalitetssäkring och styrning.',
     icon: '📋',
   },
   {
     id: 'yh-ledning',
     label: 'YH-ledning',
-    desc: 'Rektor, VD eller styrelsefunktion i en YH-organisation',
+    desc: 'Du i rektor-, vd- eller styrelseroll som behöver förstå AI:s strategiska möjligheter, risker och styrning i en YH-organisation.',
     icon: '🏛️',
   },
   {
     id: 'yh-larare',
     label: 'YH-lärare',
-    desc: 'Lärare eller handledare på en YH- eller KY-utbildning',
+    desc: 'Du som undervisar eller handleder YH-studenter och vill använda AI för att skapa bättre undervisning, bedömningar och studiehandledning.',
     icon: '🎓',
   },
   {
     id: 'yh-studerande',
     label: 'YH-studerande',
-    desc: 'Studerande på en yrkeshögskola eller vuxenutbildning',
+    desc: 'Du som studerar på en YH-utbildning och vill använda AI för att lära snabbare, strukturera dina studier och skriva reflektioner och uppgifter med trygghet.',
     icon: '📚',
   },
   {
     id: 'yh-affarsutvecklare',
     label: 'Affärsutvecklare inom YH',
-    desc: 'Affärsutvecklare eller verksamhetsutvecklare i en YH-organisation',
+    desc: 'Du som arbetar med affärs- eller verksamhetsutveckling inom YH och vill använda AI för idéutveckling, analys och strategiskt beslutsstöd.',
     icon: '🚀',
   },
   {
     id: 'ai-grundkurs',
     label: 'AI-grundkurs',
-    desc: 'Ny på AI? Börja här – grunderna förklarade steg för steg',
+    desc: 'Du som vill förstå AI från grunden – vad det kan och inte kan göra, med fokus på användbara arbetsmetoder snarare än teknisk teori.',
     icon: '🌱',
   },
 ]

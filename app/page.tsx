@@ -8,37 +8,37 @@ const tracks = [
     id: 'utbildningsledare',
     icon: '📋',
     title: 'Utbildningsledare',
-    desc: 'Operativt ansvarig för en YH- eller KY-utbildning. Fokus på daglig AI-tillämpning, promptdesign och juridik.',
+    desc: 'Du som leder eller ansvarar för en YH- eller KY-verksamhet och vill använda AI för att förbättra utbildningsstrategi, kvalitetssäkring och styrning.',
   },
   {
     id: 'yh-ledning',
     icon: '🏛️',
     title: 'YH-ledning',
-    desc: 'Rektor, VD eller styrelseledamot. Fokus på strategisk AI-styrning, organisationsansvar och styrelsearbete.',
+    desc: 'Du i rektor-, vd- eller styrelseroll som behöver förstå AI:s strategiska möjligheter, risker och styrning i en YH-organisation.',
   },
   {
     id: 'yh-larare',
     icon: '🎓',
     title: 'YH-lärare',
-    desc: 'Lärare eller handledare på YH. Fokus på examination, akademisk integritet, AI-fusk och LIA-handledning.',
+    desc: 'Du som undervisar eller handleder YH-studenter och vill använda AI för bättre undervisning, bedömningar och studiehandledning.',
   },
   {
     id: 'yh-studerande',
     icon: '📚',
     title: 'YH-studerande',
-    desc: 'Studerande på yrkeshögskola. Fokus på AI som studieverktyg, källkritik och akademisk integritet.',
+    desc: 'Du som studerar på en YH-utbildning och vill använda AI för att lära snabbare, strukturera dina studier och skriva reflektioner och uppgifter med trygghet.',
   },
   {
     id: 'yh-affarsutvecklare',
     icon: '🚀',
     title: 'Affärsutvecklare inom YH',
-    desc: 'Affärsutvecklare eller verksamhetsutvecklare i en YH-organisation. Fokus på AI i marknadsanalys, innovation och strategiskt beslutsfattande.',
+    desc: 'Du som arbetar med affärs- eller verksamhetsutveckling inom YH och vill använda AI för idéutveckling, analys och strategiskt beslutsfattande.',
   },
   {
     id: 'ai-grundkurs',
     icon: '🌱',
     title: 'AI-grundkurs',
-    desc: 'Ny på AI och vill börja från grunden? Här förklaras allt steg för steg – vad AI är, hur prompts fungerar och hur du kommer igång.',
+    desc: 'Du som vill förstå AI från grunden – vad det kan och inte kan göra, med fokus på användbara arbetsmetoder snarare än teknisk teori.',
   },
 ]
 
@@ -91,12 +91,11 @@ export default function LandingPage() {
               <span style={{ color: '#C75000' }}>yrkeshögskolan</span>
             </h1>
             <p className="text-lg text-content-muted mb-8 leading-relaxed">
-              Detta är en tillämpad kurs, anpassad efter din roll – personal, lärare eller studerande
-              på en yrkeshögskoleutbildning. Kursen är tänkt att ta dig bortom både grundläggande
-              &quot;vad är AI?&quot; och enkelt chattande, och vidare mot strategisk förståelse, ansvarsfull
-              användning och ett mer informerat beslutsfattande i praktiken. Om du känner att AI är
-              helt nytt, så finns en modul för dig med (AI-grundkurs). Välkommen och hoppas du har
-              nytta av sidan!
+              Detta är en tillämpad kurs, anpassad efter ditt spår – ledning, lärare, studerande eller
+              affärsutveckling på en yrkeshögskola. Kursen tar dig bortom grundläggande "vad är AI?" och
+              enkelt chattande, vidare mot strategisk förståelse, ansvarsfull användning och ett mer
+              informerat beslutsfattande i praktiken. Om du känner att AI är helt nytt, så finns en modul
+              för dig med (AI-grundkurs). Välkommen och hoppas du har nytta av sidan!
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link

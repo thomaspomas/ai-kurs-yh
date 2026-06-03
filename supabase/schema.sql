@@ -59,6 +59,15 @@ create policy "Users can view own progress"
   on public.module_progress for select
   using (auth.uid() = user_id);
 
+create policy "Users can insert own progress"
+  on public.module_progress for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own progress"
+  on public.module_progress for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
 -- Reflections
 create table if not exists public.reflections (
   id              uuid default gen_random_uuid() primary key,
@@ -75,9 +84,22 @@ alter table public.reflections enable row level security;
 
 drop policy if exists "Users can view own reflections" on public.reflections;
 
+drop policy if exists "Users can insert own reflections" on public.reflections;
+
+drop policy if exists "Users can update own reflections" on public.reflections;
+
 create policy "Users can view own reflections"
   on public.reflections for select
   using (auth.uid() = user_id);
+
+create policy "Users can insert own reflections"
+  on public.reflections for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own reflections"
+  on public.reflections for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 
 -- Exam submissions
 create table if not exists public.exam_submissions (
@@ -129,7 +151,8 @@ create or replace function public.complete_section(
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public,
+    row_security = off
 as $$
 declare
   v_user_id uuid := auth.uid();
@@ -168,16 +191,19 @@ create or replace function public.submit_exam(
   p_part2 text,
   p_part3 text,
   p_part4 text,
-  p_user_name text
+  p_user_name text,
+  p_track text default null
 )
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public,
+    row_security = off
 as $$
 declare
   v_user_id uuid := auth.uid();
-  v_completed_modules integer;
+  v_required_sections integer;
+  v_completed_sections integer;
   v_verification_code text;
 begin
   if v_user_id is null then
@@ -191,12 +217,21 @@ begin
     raise exception 'exam_too_short';
   end if;
 
-  select count(distinct module_id)
-    into v_completed_modules
+  v_required_sections := case lower(trim(coalesce(p_track, '')))
+    when 'ai-grundkurs' then 48
+    when 'utbildningsledare' then 55
+    when 'yh-affarsutvecklare' then 48
+    when 'yh-larare' then 54
+    when 'yh-ledning' then 55
+    when 'yh-studerande' then 54
+    else raise exception 'invalid_track';
+  end case;
+
+  select count(*) into v_completed_sections
     from public.module_progress
     where user_id = v_user_id;
 
-  if v_completed_modules < 8 then
+  if v_completed_sections < v_required_sections then
     raise exception 'modules_not_completed';
   end if;
 
@@ -221,4 +256,4 @@ end;
 $$;
 
 grant execute on function public.complete_section(integer, text, text, text) to authenticated;
-grant execute on function public.submit_exam(text, text, text, text, text) to authenticated;
+grant execute on function public.submit_exam(text, text, text, text, text, text) to authenticated;

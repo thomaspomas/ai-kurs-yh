@@ -10,9 +10,9 @@ const roboto = Roboto({
 })
 
 export const metadata: Metadata = {
-  title: 'AI för utbildningsledare – YH',
+  title: 'AI för yrkeshögskolan – anpassad efter ditt spår',
   description:
-    'Tillämpad AI-kurs på mellannivå för utbildningsledare inom yrkeshögskola och vuxenutbildning.',
+    'Tillämpad AI-kurs för yrkeshögskolan. Välj ett spår för studerande, lärare, ledning, affärsutveckling eller grundkurs.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

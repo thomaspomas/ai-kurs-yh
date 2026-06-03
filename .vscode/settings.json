@@ -1,0 +1,27 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "env": true,
+        "true": true,
+        "command": true,
+        "/^cd /Users/thomascarlberg/Documents/Appar/AI-20/ai-kurs-yh && python3 - <<'PY'\nimport re, pathlib\nroot=pathlib\\.Path\\('app'\\)\nfor p in pathlib\\.Path\\('\\.'\\)\\.glob\\('\\*\\*/\\*\\.\\{ts,tsx,js,jsx\\}'\\): \n    if p\\.is_file\\(\\):\n        text=p\\.read_text\\(errors='ignore'\\)\n        for m in re\\.findall\\(r'src=\\(\\?:\"\\|\\\\\"\\)\\{1\\}\\(/\\[\\^\"\\\\'\\]\\+\\)\\(\\?:\"\\|\\\\\"\\)', text\\):\n            print\\(p, m\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/usr/bin/ls": true,
+        "/bin/ls": true,
+        "/usr/bin/grep": true,
+        "/bin/sh": true,
+        "/^cd /Users/thomascarlberg/Documents/Appar/AI-20/ai-kurs-yh && python - <<'PY'\nimport pathlib, json, re\nfrom collections import defaultdict\nroot = pathlib\\.Path\\('\\.'\\) / 'data' / 'tracks'\nfor p in sorted\\(root\\.glob\\('\\*\\.ts'\\)\\):\n    text = p\\.read_text\\(encoding='utf-8'\\)\n    # crude parse for modules array by counting 'sections:' and 'id:'\n    # use regex to count section ids\n    modules = re\\.findall\\(r'\\\\\\{\\[\\^\\{\\}\\]\\*\\?sections:\\\\s\\*\\\\\\[', text, re\\.S\\)\n    # fallback counting 'module id' maybe easier with splits\n    # Use actual js-like parsing\\? We'll just approximate with 'section_id's in names\\? Let's simpler use regex for 'id: ' after modules\\.\n    # Better: count occurrences of 'section_id:' not present\\. Hmm\\.\n    print\\(p\\.name, 'lines', len\\(text\\.splitlines\\(\\)\\)\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd /Users/thomascarlberg/Documents/Appar/AI-20/ai-kurs-yh && python3 - <<'PY'\nimport pathlib, re\nroot = pathlib\\.Path\\('\\.'\\) / 'data' / 'tracks'\nfor p in sorted\\(root\\.glob\\('\\*\\.ts'\\)\\):\n    text = p\\.read_text\\(encoding='utf-8'\\)\n    module_starts = \\[m\\.start\\(\\) for m in re\\.finditer\\(r'modules\\\\s\\*=\\\\s\\*\\\\\\[', text\\)\\]\n    # count section objects by pattern 'id:' and 'type:' inside module definitions\n    sections = len\\(re\\.findall\\(r'\\\\\\{\\[\\^\\}\\]\\*\\?id:\\\\s\\*\\[\\^,\\]\\+,\\[\\^\\}\\]\\*\\?type:\\\\s\\*\\[\\^,\\]\\+', text\\)\\)\n    print\\(p\\.name, 'section objects', sections\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd /Users/thomascarlberg/Documents/Appar/AI-20/ai-kurs-yh && python3 - <<'PY'\nimport pathlib, re\nroot = pathlib\\.Path\\('\\.'\\) / 'data' / 'tracks'\nfor p in sorted\\(root\\.glob\\('\\*\\.ts'\\)\\):\n    text = p\\.read_text\\(encoding='utf-8'\\)\n    modules = re\\.split\\(r'\\\\\\{\\\\s\\*id:\\\\s\\*\\\\d\\+,', text\\)\\[1:\\]\n    counts=\\[\\]\n    for mod in modules:\n        # find first sections: \\[ \\.\\.\\. \\] block by bracket matching\n        m = re\\.search\\(r'sections:\\\\s\\*\\\\\\[', mod\\)\n        if not m: continue\n        start = m\\.end\\(\\)\n        depth=1\n        i=start\n        while i<len\\(mod\\) and depth>0:\n            if mod\\[i\\]=='\\[': depth\\+=1\n            elif mod\\[i\\]=='\\]': depth-=1\n            i\\+=1\n        sect_block=mod\\[start:i-1\\]\n        sects = re\\.findall\\(r'\\\\\\{\\[\\^\\}\\]\\*\\?id:\\\\s\\*\\[\\^,\\]\\+,\\[\\^\\}\\]\\*\\?type:\\\\s\\*\\[\\^,\\]\\+', sect_block, re\\.S\\)\n        counts\\.append\\(len\\(sects\\)\\)\n    print\\(p\\.name, counts, 'total', sum\\(counts\\)\\)\nPY$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

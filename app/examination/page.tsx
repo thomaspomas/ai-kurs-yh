@@ -54,6 +54,7 @@ export default function ExaminationPage() {
   const router = useRouter()
 
   const [userName, setUserName] = useState('')
+  const [track, setTrack] = useState<Track>('utbildningsledare')
   const [answers, setAnswers] = useState<Record<string, string>>({
     part1: '',
     part2: '',
@@ -76,6 +77,7 @@ export default function ExaminationPage() {
     setUserName(user.user_metadata?.full_name ?? user.email ?? '')
 
     const track: Track = (user.user_metadata?.track as Track) ?? 'utbildningsledare'
+    setTrack(track)
     const modules = getModulesForTrack(track)
 
     const { data: progress } = await supabase
@@ -125,6 +127,7 @@ export default function ExaminationPage() {
       p_part3: answers.part3,
       p_part4: answers.part4,
       p_user_name: userName,
+      p_track: track,
     })
 
     if (dbError || data !== true) {
